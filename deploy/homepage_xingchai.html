@@ -1,0 +1,246 @@
+<div class="xc-home">
+<style>
+  .xc-home{
+    --bg:#f7f7fd;
+    --bg2:#ffffff;
+    --ink:#161a2e;
+    --ink2:#4b5170;
+    --ink3:#8086a3;
+    --brand:#6a5cff;
+    --brand2:#22d3ee;
+    --pink:#e879f9;
+    --line:rgba(90,80,180,.14);
+    --line2:rgba(90,80,180,.22);
+    --card:rgba(255,255,255,.72);
+    display:block;width:100%;position:relative;overflow:hidden;
+    color:var(--ink);
+    background:
+      radial-gradient(ellipse 55% 40% at 8% -8%, rgba(106,92,255,.20), transparent 62%),
+      radial-gradient(ellipse 50% 38% at 92% -4%, rgba(34,211,238,.16), transparent 64%),
+      radial-gradient(ellipse 45% 34% at 50% 104%, rgba(232,121,249,.12), transparent 66%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+    font-family:"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  :host-context(.dark) .xc-home{
+    --bg:#0b0e1c;
+    --bg2:#0e1224;
+    --ink:#eef0ff;
+    --ink2:#aab0d0;
+    --ink3:#767ca0;
+    --brand:#8b7cff;
+    --brand2:#3ddbf0;
+    --pink:#ee8bfa;
+    --line:rgba(150,150,255,.14);
+    --line2:rgba(150,150,255,.24);
+    --card:rgba(20,24,46,.62);
+    background:
+      radial-gradient(ellipse 55% 42% at 8% -8%, rgba(106,92,255,.28), transparent 62%),
+      radial-gradient(ellipse 50% 38% at 92% -4%, rgba(34,211,238,.20), transparent 64%),
+      radial-gradient(ellipse 45% 34% at 50% 104%, rgba(232,121,249,.16), transparent 66%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%);
+  }
+  .xc-home *,.xc-home *::before,.xc-home *::after{box-sizing:border-box}
+  .xc-home a{text-decoration:none;color:inherit}
+  .xc-wrap{position:relative;width:min(1120px,calc(100% - 40px));margin:0 auto;z-index:1}
+
+  /* backdrop */
+  .xc-aurora{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:0}
+  .xc-blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55}
+  .xc-blob.b1{width:560px;height:560px;left:-180px;top:-220px;background:radial-gradient(circle,rgba(106,92,255,.55),transparent 66%);animation:xc-float-a 26s ease-in-out infinite alternate}
+  .xc-blob.b2{width:520px;height:520px;right:-160px;top:-160px;background:radial-gradient(circle,rgba(34,211,238,.42),transparent 66%);animation:xc-float-b 30s ease-in-out infinite alternate}
+  .xc-blob.b3{width:480px;height:480px;left:38%;bottom:-240px;background:radial-gradient(circle,rgba(232,121,249,.36),transparent 66%);animation:xc-float-c 34s ease-in-out infinite alternate}
+  .xc-grid{position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(to right,var(--line) 1px,transparent 1px),linear-gradient(to bottom,var(--line) 1px,transparent 1px);
+    background-size:64px 64px;
+    -webkit-mask-image:radial-gradient(ellipse 65% 55% at 50% 0%,#000 0%,transparent 80%);
+    mask-image:radial-gradient(ellipse 65% 55% at 50% 0%,#000 0%,transparent 80%);
+  }
+
+  /* hero */
+  .xc-hero{position:relative;padding:132px 0 52px;text-align:center}
+  .xc-badge{display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:999px;
+    border:1px solid var(--line2);background:var(--card);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+    font-size:12px;font-weight:600;letter-spacing:.16em;color:var(--ink2);
+    box-shadow:0 6px 24px rgba(80,70,200,.10);
+    animation:xc-rise .8s cubic-bezier(.22,.61,.36,1) both}
+  .xc-dot{width:7px;height:7px;border-radius:50%;background:linear-gradient(135deg,var(--brand),var(--brand2));box-shadow:0 0 10px var(--brand)}
+  .xc-title{margin:28px 0 0;font-size:clamp(42px,6.6vw,80px);line-height:1.08;font-weight:800;letter-spacing:-.01em;
+    animation:xc-rise .9s cubic-bezier(.22,.61,.36,1) .06s both}
+  .xc-title span{background:linear-gradient(100deg,var(--brand) 0%,var(--brand2) 50%,var(--pink) 100%);background-size:200% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;animation:xc-shine 9s ease-in-out infinite}
+  .xc-sub{margin:22px auto 0;max-width:36em;color:var(--ink2);font-size:clamp(14px,1.5vw,16.5px);line-height:1.85;
+    animation:xc-rise .9s cubic-bezier(.22,.61,.36,1) .14s both}
+  .xc-actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:34px;animation:xc-rise .9s cubic-bezier(.22,.61,.36,1) .22s both}
+  .xc-btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 26px;
+    border-radius:12px;font-size:15px;font-weight:600;letter-spacing:.02em;border:1px solid transparent;overflow:hidden;
+    transition:transform .28s ease,box-shadow .28s ease,background-color .28s ease,border-color .28s ease}
+  .xc-btn:hover{transform:translateY(-2px)}
+  .xc-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:transform .28s ease}
+  .xc-btn:hover svg{transform:translateX(3px)}
+  .xc-btn-primary{color:#fff;background:linear-gradient(120deg,var(--brand),#7c6bff 55%,var(--brand2));
+    box-shadow:0 14px 34px rgba(106,92,255,.35),inset 0 1px 0 rgba(255,255,255,.22)}
+  .xc-btn-primary::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;
+    background:linear-gradient(100deg,transparent,rgba(255,255,255,.35),transparent);transform:skewX(-18deg);transition:left .6s ease}
+  .xc-btn-primary:hover::after{left:120%}
+  .xc-btn-ghost{color:var(--ink);background:var(--card);border-color:var(--line2);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .xc-btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
+
+  /* stats */
+  .xc-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:58px;
+    animation:xc-rise .9s cubic-bezier(.22,.61,.36,1) .3s both}
+  .xc-stat{padding:18px 10px;border-radius:14px;border:1px solid var(--line);background:var(--card);
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+  .xc-stat b{display:block;font-size:clamp(20px,2.4vw,28px);font-weight:800;letter-spacing:-.01em;
+    background:linear-gradient(100deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .xc-stat span{display:block;margin-top:4px;font-size:12px;color:var(--ink3);letter-spacing:.08em}
+
+  /* marquee */
+  .xc-marquee{position:relative;max-width:880px;margin:46px auto 0;overflow:hidden;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+  .xc-track{display:flex;gap:10px;width:max-content;animation:xc-scroll 44s linear infinite}
+  .xc-marquee:hover .xc-track{animation-play-state:paused}
+  .xc-pill{display:inline-flex;align-items:center;gap:9px;white-space:nowrap;padding:9px 17px;border-radius:999px;
+    border:1px solid var(--line);background:var(--card);font-size:13px;font-weight:600;color:var(--ink2)}
+  .xc-pill i{width:6px;height:6px;border-radius:50%;background:var(--brand)}
+  .xc-pill:nth-child(3n+2) i{background:var(--brand2)}
+  .xc-pill:nth-child(3n+3) i{background:var(--pink)}
+
+  /* features */
+  .xc-features{padding:44px 0 10px}
+  .xc-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+  .xc-card{position:relative;padding:26px 22px;border-radius:16px;border:1px solid var(--line);background:var(--card);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);overflow:hidden;
+    transition:transform .35s cubic-bezier(.22,.61,.36,1),border-color .35s ease,box-shadow .35s ease}
+  .xc-card::before{content:"";position:absolute;inset:0;border-radius:inherit;opacity:0;pointer-events:none;
+    background:radial-gradient(320px circle at 30% 0%,rgba(106,92,255,.16),transparent 62%);transition:opacity .35s ease}
+  .xc-card:hover{transform:translateY(-5px);border-color:var(--line2);box-shadow:0 22px 48px rgba(70,60,180,.14)}
+  .xc-card:hover::before{opacity:1}
+  .xc-ico{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;margin-bottom:16px;
+    color:var(--brand);background:linear-gradient(145deg,rgba(106,92,255,.16),rgba(34,211,238,.10));
+    border:1px solid rgba(106,92,255,.22)}
+  .xc-card:nth-child(2) .xc-ico{color:var(--brand2);background:linear-gradient(145deg,rgba(34,211,238,.16),rgba(106,92,255,.10));border-color:rgba(34,211,238,.25)}
+  .xc-card:nth-child(3) .xc-ico{color:var(--pink);background:linear-gradient(145deg,rgba(232,121,249,.16),rgba(34,211,238,.10));border-color:rgba(232,121,249,.25)}
+  .xc-ico svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .xc-card h3{margin:0 0 8px;font-size:16px;font-weight:700;letter-spacing:.01em}
+  .xc-card p{margin:0;font-size:13px;line-height:1.75;color:var(--ink2)}
+
+  /* cta */
+  .xc-cta{padding:58px 0 50px}
+  .xc-cta-card{position:relative;overflow:hidden;text-align:center;padding:54px 30px;border-radius:22px;
+    border:1px solid var(--line2);
+    background:
+      radial-gradient(120% 150% at 50% -30%,rgba(106,92,255,.22) 0%,transparent 62%),
+      radial-gradient(120% 150% at 50% 130%,rgba(34,211,238,.16) 0%,transparent 62%),
+      var(--card);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    box-shadow:0 30px 70px rgba(60,50,160,.16)}
+  .xc-cta-card h2{margin:0;font-size:clamp(24px,3.2vw,36px);font-weight:800;letter-spacing:-.01em;line-height:1.3}
+  .xc-cta-card p{margin:12px 0 0;font-size:14px;color:var(--ink2)}
+  .xc-cta-card .xc-actions{margin-top:26px;animation:none}
+
+  /* footer */
+  .xc-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px;padding:8px 0 42px;
+    font-size:12.5px;color:var(--ink3);letter-spacing:.06em}
+  .xc-foot a{color:var(--ink3);transition:color .25s ease}
+  .xc-foot a:hover{color:var(--brand)}
+  .xc-sep{opacity:.4}
+
+  @keyframes xc-rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes xc-shine{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  @keyframes xc-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+  @keyframes xc-float-a{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(60px,40px,0) scale(1.1)}}
+  @keyframes xc-float-b{from{transform:translate3d(0,0,0) scale(1.06)}to{transform:translate3d(-50px,50px,0) scale(.95)}}
+  @keyframes xc-float-c{from{transform:translate3d(0,0,0) scale(.96)}to{transform:translate3d(40px,-40px,0) scale(1.08)}}
+
+  @supports (animation-timeline: view()){
+    .xc-card{animation:xc-rise .8s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 24%}
+    .xc-cta-card{animation:xc-rise .8s cubic-bezier(.22,.61,.36,1) both;animation-timeline:view();animation-range:entry 0% cover 28%}
+  }
+
+  @media (max-width:960px){
+    .xc-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .xc-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .xc-hero{padding:104px 0 40px}
+    .xc-btn{min-height:46px;padding:0 20px}
+  }
+  @media (max-width:560px){.xc-cards{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){.xc-home *{animation:none!important;transition:none!important}}
+</style>
+
+<div class="xc-aurora" aria-hidden="true"><span class="xc-blob b1"></span><span class="xc-blob b2"></span><span class="xc-blob b3"></span></div>
+<div class="xc-grid" aria-hidden="true"></div>
+
+<main class="xc-wrap">
+  <section class="xc-hero">
+    <div class="xc-badge"><span class="xc-dot"></span>XINGCHAI AI &nbsp;·&nbsp; 星柴 AI</div>
+    <h1 class="xc-title">一个接口<br /><span>连接所有主流 AI 模型</span></h1>
+    <p class="xc-sub">DeepSeek、Kimi、Qwen、GLM、Seedance、Image 2.5 等模型统一接入，OpenAI 兼容 API，按量计费，开箱即用。</p>
+    <div class="xc-actions">
+      <a class="xc-btn xc-btn-primary" href="/register">立即开始<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="xc-btn xc-btn-ghost" href="/pricing">查看模型</a>
+    </div>
+    <div class="xc-stats">
+      <div class="xc-stat"><b>20+</b><span>主流模型</span></div>
+      <div class="xc-stat"><b>99.9%</b><span>服务可用性</span></div>
+      <div class="xc-stat"><b>1 个</b><span>统一接口</span></div>
+      <div class="xc-stat"><b>0 门槛</b><span>按量付费</span></div>
+    </div>
+    <div class="xc-marquee" aria-hidden="true">
+      <div class="xc-track">
+        <span class="xc-pill"><i></i>DeepSeek V4</span><span class="xc-pill"><i></i>Kimi K3</span><span class="xc-pill"><i></i>Qwen3 Max</span>
+        <span class="xc-pill"><i></i>GLM-5.3</span><span class="xc-pill"><i></i>MiniMax M3</span><span class="xc-pill"><i></i>Seedance 2.0</span>
+        <span class="xc-pill"><i></i>Image 2.5</span><span class="xc-pill"><i></i>Codex</span>
+        <span class="xc-pill"><i></i>DeepSeek V4</span><span class="xc-pill"><i></i>Kimi K3</span><span class="xc-pill"><i></i>Qwen3 Max</span>
+        <span class="xc-pill"><i></i>GLM-5.3</span><span class="xc-pill"><i></i>MiniMax M3</span><span class="xc-pill"><i></i>Seedance 2.0</span>
+        <span class="xc-pill"><i></i>Image 2.5</span><span class="xc-pill"><i></i>Codex</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="xc-features">
+    <div class="xc-cards">
+      <article class="xc-card">
+        <div class="xc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v18M3 12h18"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <h3>统一接入</h3>
+        <p>一套 OpenAI 兼容接口，调用全部主流模型。</p>
+      </article>
+      <article class="xc-card">
+        <div class="xc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></div>
+        <h3>智能调度</h3>
+        <p>多线路自动切换与重试，保障调用稳定。</p>
+      </article>
+      <article class="xc-card">
+        <div class="xc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+        <h3>透明计费</h3>
+        <p>用量清晰可查，按量付费，用多少付多少。</p>
+      </article>
+      <article class="xc-card">
+        <div class="xc-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v6c0 4.4-3 7.7-7 9-4-1.3-7-4.6-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3>安全可靠</h3>
+        <p>密钥隔离、权限分级，企业级安全防护。</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="xc-cta">
+    <div class="xc-cta-card">
+      <h2>开始你的第一次调用</h2>
+      <p>注册即得 API Key，五分钟完成接入。</p>
+      <div class="xc-actions">
+        <a class="xc-btn xc-btn-primary" href="/register">免费开始<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="xc-foot">
+    <span>© 2026 星柴AI</span><span class="xc-sep">·</span>
+    <a href="/user-agreement">用户协议</a><span class="xc-sep">·</span>
+    <a href="/privacy-policy">隐私政策</a><span class="xc-sep">·</span>
+    <a href="/licenses">开源许可</a><span class="xc-sep">·</span>
+    <span>Frontend design and development by <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API contributors</a>.</span>
+  </footer>
+</main>
+</div>
