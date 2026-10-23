@@ -578,7 +578,7 @@ function buildVideoSample(lang: Lang, ctx: SampleContext): string {
   const prompt = 'A cinematic tracking shot through a neon-lit rainy alley.'
   const name = ctx.modelName.toLowerCase()
   let requestBody: Record<string, unknown>
-  if (name.startsWith('minimax-h3')) {
+  if (/^minimax[\s-]?h3/.test(name)) {
     // Gway upstream MiniMax H3: prompt + duration(4-15s) + ratio + 768p.
     requestBody = {
       model: ctx.modelName,
@@ -665,7 +665,7 @@ export function buildSample(
   const isVideoModel =
     seedanceName.startsWith('seedance-2.0') ||
     seedanceName === 'seedance-2.5' ||
-    seedanceName.startsWith('minimax-h3')
+    /^minimax[\s-]?h3/.test(seedanceName)
   if (isVideoEndpoint && isVideoModel) {
     return buildVideoSample(lang, ctx)
   }

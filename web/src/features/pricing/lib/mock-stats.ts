@@ -1669,7 +1669,7 @@ export function buildSupportedParameters(
   }
   if (cat === 'video') {
     const name = model.model_name.toLowerCase()
-    if (name.startsWith('minimax-h3')) {
+    if (/^minimax[\s-]?h3/.test(name)) {
       return createMinimaxH3Parameters()
     }
     if (name === 'seedance-2.0') {
