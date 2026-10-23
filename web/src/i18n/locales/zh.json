@@ -7416,6 +7416,9 @@
     "Send email alerts when a user falls below this quota": "当用户低于此配额时发送电子邮件警报",
     "SMTP Email": "SMTP 邮箱",
     "RPM = requests per minute, TPM = tokens per minute, RPD = requests per day. Limits apply per token group.": "RPM = 每分钟请求数，TPM = 每分钟 token 数，RPD = 每日请求数。限制按令牌分组生效。",
-    "Open Source & Licenses": "开源许可"
+    "Open Source & Licenses": "开源许可",
+    "Reference video URLs": "参考视频 URL 列表",
+    "Reference audio URLs": "参考音频 URL 列表",
+    "Mixed reference media items (type + url)": "混合参考素材（type + url）"
   }
 }

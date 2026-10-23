@@ -576,13 +576,26 @@ function buildImageSample(lang: Lang, ctx: SampleContext): string {
 function buildVideoSample(lang: Lang, ctx: SampleContext): string {
   const url = ctx.baseUrl + ctx.endpointPath
   const prompt = 'A cinematic tracking shot through a neon-lit rainy alley.'
-  const requestBody: Record<string, unknown> = {
-    model: ctx.modelName,
-    resolution: '720p',
-    ratio: '16:9',
-    duration: 8,
-    generate_audio: true,
-    bitrate_mode: 'standard',
+  const name = ctx.modelName.toLowerCase()
+  let requestBody: Record<string, unknown>
+  if (name.startsWith('minimax-h3')) {
+    // Gway upstream MiniMax H3: prompt + duration(4-15s) + ratio + 768p.
+    requestBody = {
+      model: ctx.modelName,
+      prompt,
+      duration: 5,
+      ratio: '16:9',
+      resolution: '768p',
+    }
+  } else {
+    requestBody = {
+      model: ctx.modelName,
+      resolution: '720p',
+      ratio: '16:9',
+      duration: 8,
+      generate_audio: true,
+      bitrate_mode: 'standard',
+    }
   }
   if (ctx.endpointType === 'openai-response') {
     requestBody.input = prompt
@@ -647,10 +660,13 @@ export function buildSample(
   ctx: SampleContext
 ): string {
   const seedanceName = ctx.modelName.toLowerCase()
-  const isSeedanceVideo =
-    (endpointType === 'openai-video' || endpointType === 'openai-response') &&
-    (seedanceName.startsWith('seedance-2.0') || seedanceName === 'seedance-2.5')
-  if (isSeedanceVideo) {
+  const isVideoEndpoint =
+    endpointType === 'openai-video' || endpointType === 'openai-response'
+  const isVideoModel =
+    seedanceName.startsWith('seedance-2.0') ||
+    seedanceName === 'seedance-2.5' ||
+    seedanceName.startsWith('minimax-h3')
+  if (isVideoEndpoint && isVideoModel) {
     return buildVideoSample(lang, ctx)
   }
   if (endpointType === 'anthropic') {

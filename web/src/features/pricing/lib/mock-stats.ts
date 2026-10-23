@@ -1464,6 +1464,64 @@ const VIDEO_PARAMS: SupportedParameter[] = [
   },
 ]
 
+function createMinimaxH3Parameters(): SupportedParameter[] {
+  return [
+    {
+      name: 'prompt',
+      type: 'string',
+      required: true,
+      descriptionKey: 'Text description of the desired video',
+    },
+    {
+      name: 'duration',
+      type: 'integer',
+      defaultValue: 15,
+      range: '4 ~ 15',
+      descriptionKey: 'Video length in seconds',
+    },
+    {
+      name: 'ratio',
+      type: 'enum',
+      enumValues: ['16:9', '9:16', '1:1'],
+      defaultValue: '16:9',
+      descriptionKey: 'Output aspect ratio',
+    },
+    {
+      name: 'resolution',
+      type: 'enum',
+      enumValues: ['768p'],
+      defaultValue: '768p',
+      descriptionKey: 'Output resolution',
+    },
+    {
+      name: 'images',
+      type: 'array',
+      descriptionKey: 'Reference image URLs; up to 9 images total',
+    },
+    {
+      name: 'videos',
+      type: 'array',
+      descriptionKey: 'Reference video URLs',
+    },
+    {
+      name: 'audios',
+      type: 'array',
+      descriptionKey: 'Reference audio URLs',
+    },
+    {
+      name: 'materials',
+      type: 'array',
+      descriptionKey: 'Mixed reference media items (type + url)',
+    },
+    {
+      name: 'aspect_ratio',
+      type: 'enum',
+      enumValues: ['16:9', '9:16', '1:1'],
+      descriptionKey: 'Alias of ratio',
+    },
+  ]
+}
+
 function createSeedanceVideoParameters(
   resolutions: string[]
 ): SupportedParameter[] {
@@ -1611,6 +1669,9 @@ export function buildSupportedParameters(
   }
   if (cat === 'video') {
     const name = model.model_name.toLowerCase()
+    if (name.startsWith('minimax-h3')) {
+      return createMinimaxH3Parameters()
+    }
     if (name === 'seedance-2.0') {
       return createSeedanceVideoParameters(['480p', '720p', '4k', '1080p'])
     }
