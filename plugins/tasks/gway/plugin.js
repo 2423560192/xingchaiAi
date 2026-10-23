@@ -6,7 +6,7 @@
 // and declares a per-second usage fact so the operator can price it by video
 // duration.
 
-const MODELS = ["minimax-h3-gway"];
+const MODELS = ["MiniMax H3"];
 
 const MIN_DURATION = 4;
 const MAX_DURATION = 15;
