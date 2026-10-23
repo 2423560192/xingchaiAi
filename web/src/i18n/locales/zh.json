@@ -7421,6 +7421,9 @@
     "Reference audio URLs": "参考音频 URL 列表",
     "Mixed reference media items (type + url)": "混合参考素材（type + url）",
     "API Docs": "API 文档",
-    "Model Plaza": "模型广场"
+    "Model Plaza": "模型广场",
+    "Reference image URLs; up to 10 images total": "参考图片 URL；最多 10 张",
+    "Reference audio URLs; up to 5 items": "参考音频 URL 列表（最多 5 个）",
+    "Optional face processing options": "可选人脸处理参数"
   }
 }

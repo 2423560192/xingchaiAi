@@ -1464,6 +1464,52 @@ const VIDEO_PARAMS: SupportedParameter[] = [
   },
 ]
 
+function createWan3Parameters(): SupportedParameter[] {
+  return [
+    {
+      name: 'prompt',
+      type: 'string',
+      required: true,
+      descriptionKey: 'Text description of the desired video',
+    },
+    {
+      name: 'duration',
+      type: 'integer',
+      defaultValue: 5,
+      range: '5 ~ 30',
+      descriptionKey: 'Video length in seconds',
+    },
+    {
+      name: 'resolution',
+      type: 'enum',
+      enumValues: ['480p', '720p', '1080p'],
+      defaultValue: '720p',
+      descriptionKey: 'Output resolution',
+    },
+    {
+      name: 'images',
+      type: 'array',
+      descriptionKey: 'Reference image URLs; up to 10 images total',
+    },
+    {
+      name: 'audios',
+      type: 'array',
+      descriptionKey: 'Reference audio URLs; up to 5 items',
+    },
+    {
+      name: 'ratio',
+      type: 'enum',
+      enumValues: ['16:9', '9:16', '1:1'],
+      descriptionKey: 'Output aspect ratio',
+    },
+    {
+      name: 'face',
+      type: 'object',
+      descriptionKey: 'Optional face processing options',
+    },
+  ]
+}
+
 function createMinimaxH3Parameters(): SupportedParameter[] {
   return [
     {
@@ -1669,6 +1715,9 @@ export function buildSupportedParameters(
   }
   if (cat === 'video') {
     const name = model.model_name.toLowerCase()
+    if (/^wan[\s-]?3/.test(name)) {
+      return createWan3Parameters()
+    }
     if (/^minimax[\s-]?h3/.test(name)) {
       return createMinimaxH3Parameters()
     }

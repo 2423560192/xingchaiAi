@@ -108,7 +108,7 @@ export function Docs() {
                 {t('API Docs')}
               </h1>
               <p className='text-muted-foreground mt-2 text-sm'>
-                星柴AI 视频生成 API：OpenAI 兼容协议，按秒计费，支持文生视频、图生视频与多模态参考。
+                星柴AI 视频生成 API：OpenAI 兼容协议，按秒计费，支持 MiniMax H3 与 Wan 3.0 视频生成（文生视频、图生视频与多模态参考）。
               </p>
             </div>
           </div>
@@ -140,7 +140,11 @@ export function Docs() {
             <p>
               当前可用模型：
               <code className='bg-muted/60 rounded px-1.5 py-0.5 text-[12.5px]'>{MODEL}</code>
-              （MiniMax H3 视频生成）。可通过 <code>GET /v1/models</code> 获取账号实际可用的模型列表。
+              （MiniMax H3 视频生成）与
+              <code className='bg-muted/60 rounded px-1.5 py-0.5 text-[12.5px]'>Wan 3.0</code>
+              （Wan 3.0 视频生成，480p / 720p / 1080p）。可通过
+              <code className='bg-muted/60 rounded px-1.5 py-0.5 text-[12.5px]'>GET /v1/models</code>
+              获取账号实际可用的模型列表。
             </p>
           </Section>
 
@@ -204,6 +208,11 @@ while True:
         break
     time.sleep(10)`}
             </CodeBlock>
+            <p>
+              使用 Wan 3.0 时，把 <code>model</code> 换成
+              <code>Wan 3.0</code>，并传 <code>resolution</code>（480p / 720p / 1080p，默认 720p）、
+              <code>duration</code>（5 ~ 30 秒）。
+            </p>
           </Section>
 
           <Section id='create' title='创建视频任务'>
@@ -278,6 +287,31 @@ while True:
                 </tbody>
               </table>
             </div>
+            <p className='pt-2'>
+              <strong>Wan 3.0 参数：</strong>
+            </p>
+            <div className='border-border/60 overflow-x-auto rounded-xl border'>
+              <table className='w-full text-left text-[13px]'>
+                <thead className='bg-muted/40 text-foreground/80'>
+                  <tr>
+                    <th className='px-3 py-2 font-medium'>参数</th>
+                    <th className='px-3 py-2 font-medium'>类型</th>
+                    <th className='px-3 py-2 font-medium'>默认值 / 范围</th>
+                    <th className='px-3 py-2 font-medium'>说明</th>
+                  </tr>
+                </thead>
+                <tbody className='divide-border/50 divide-y'>
+                  <tr><td className='px-3 py-2'><code>model</code>（必填）</td><td className='px-3 py-2'>string</td><td className='px-3 py-2'>—</td><td className='px-3 py-2'>固定为 Wan 3.0</td></tr>
+                  <tr><td className='px-3 py-2'><code>prompt</code>（必填）</td><td className='px-3 py-2'>string</td><td className='px-3 py-2'>—</td><td className='px-3 py-2'>视频描述</td></tr>
+                  <tr><td className='px-3 py-2'><code>duration</code></td><td className='px-3 py-2'>integer</td><td className='px-3 py-2'>默认 5，5 ~ 30</td><td className='px-3 py-2'>视频时长（秒），同时决定计费</td></tr>
+                  <tr><td className='px-3 py-2'><code>resolution</code></td><td className='px-3 py-2'>enum</td><td className='px-3 py-2'>默认 720p，可选 480p / 720p / 1080p</td><td className='px-3 py-2'>输出分辨率，影响每秒单价</td></tr>
+                  <tr><td className='px-3 py-2'><code>images</code></td><td className='px-3 py-2'>array</td><td className='px-3 py-2'>—</td><td className='px-3 py-2'>参考图片 URL，最多 10 张</td></tr>
+                  <tr><td className='px-3 py-2'><code>audios</code></td><td className='px-3 py-2'>array</td><td className='px-3 py-2'>—</td><td className='px-3 py-2'>参考音频 URL，最多 5 个</td></tr>
+                  <tr><td className='px-3 py-2'><code>ratio</code></td><td className='px-3 py-2'>enum</td><td className='px-3 py-2'>可选 16:9 / 9:16 / 1:1</td><td className='px-3 py-2'>输出宽高比</td></tr>
+                  <tr><td className='px-3 py-2'><code>face</code></td><td className='px-3 py-2'>object</td><td className='px-3 py-2'>—</td><td className='px-3 py-2'>可选人脸处理参数</td></tr>
+                </tbody>
+              </table>
+            </div>
             <p>返回示例：</p>
             <CodeBlock>
               {`{
@@ -342,6 +376,28 @@ while True:
                 </tbody>
               </table>
             </div>
+
+            <p className='pt-4'>
+              <strong>Wan 3.0</strong> 按分辨率 + 时长计费（每秒单价）：
+            </p>
+            <div className='border-border/60 overflow-x-auto rounded-xl border'>
+              <table className='w-full text-left text-[13px]'>
+                <thead className='bg-muted/40 text-foreground/80'>
+                  <tr>
+                    <th className='px-3 py-2 font-medium'>resolution</th>
+                    <th className='px-3 py-2 font-medium'>单价</th>
+                  </tr>
+                </thead>
+                <tbody className='divide-border/50 divide-y'>
+                  <tr><td className='px-3 py-2'>480p</td><td className='px-3 py-2'>¥0.325 / 秒</td></tr>
+                  <tr><td className='px-3 py-2'>720p</td><td className='px-3 py-2'>¥0.65 / 秒</td></tr>
+                  <tr><td className='px-3 py-2'>1080p</td><td className='px-3 py-2'>¥1.30 / 秒</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              费用 = 秒数 × 对应分辨率单价。例如 720p 10 秒 = ¥6.50，1080p 5 秒 = ¥6.50。
+            </p>
           </Section>
 
           <Section id='errors' title='错误处理'>
@@ -366,7 +422,7 @@ while True:
                   </tr>
                 </thead>
                 <tbody className='divide-border/50 divide-y'>
-                  <tr><td className='px-3 py-2'>400</td><td className='px-3 py-2'>参数缺失/不合法（如 duration 超出 4~15）</td></tr>
+                  <tr><td className='px-3 py-2'>400</td><td className='px-3 py-2'>参数缺失/不合法（如 duration 超出模型范围：MiniMax H3 为 4~15，Wan 3.0 为 5~30）</td></tr>
                   <tr><td className='px-3 py-2'>401</td><td className='px-3 py-2'>缺少 API Key 或 Key 无效</td></tr>
                   <tr><td className='px-3 py-2'>403</td><td className='px-3 py-2'>余额不足、无权使用该模型/分组、IP 不在白名单</td></tr>
                   <tr><td className='px-3 py-2'>429</td><td className='px-3 py-2'>请求过于频繁，请退避重试</td></tr>

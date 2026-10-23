@@ -3,17 +3,36 @@
 // Gway is itself a New API gateway: it accepts POST /v1/video/generations and
 // reports task state through GET /v1/videos/tasks/:task_id, returning result
 // links in result_urls. This plugin proxies that protocol for its video models
-// and declares a per-second usage fact so the operator can price it by video
-// duration.
+// and declares per-second usage facts so the operator can price by duration.
 
-const MODELS = ["MiniMax H3"];
+const MODELS = ["MiniMax H3", "Wan 3.0"];
 
-const MIN_DURATION = 4;
-const MAX_DURATION = 15;
-const DEFAULT_DURATION = 15;
+const PROFILES = {
+  "minimax h3": {
+    key: "minimax",
+    minDuration: 4,
+    maxDuration: 15,
+    defaultDuration: 15,
+    resolutions: ["768p"],
+    defaultResolution: "768p",
+    maxImages: 9,
+    maxVideos: 3,
+    maxAudios: 3,
+  },
+  "wan 3.0": {
+    key: "wan",
+    minDuration: 5,
+    maxDuration: 30,
+    defaultDuration: 5,
+    resolutions: ["480p", "720p", "1080p"],
+    defaultResolution: "720p",
+    maxImages: 10,
+    maxVideos: 0,
+    maxAudios: 5,
+  },
+};
 
 const RATIOS = ["16:9", "9:16", "1:1"];
-const RESOLUTIONS = ["768p"];
 
 function trimmed(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -23,8 +42,11 @@ function plainObject(value) {
   return value && typeof value === "object" && !Array.isArray(value) ? value : null;
 }
 
-function hasOwn(object, key) {
-  return Object.prototype.hasOwnProperty.call(object, key);
+function profileFor(model) {
+  const folded = trimmed(model).toLowerCase();
+  if (/^minimax[\s-]?h3/.test(folded)) return PROFILES["minimax h3"];
+  if (/^wan[\s-]?3/.test(folded)) return PROFILES["wan 3.0"];
+  throw new Error("unsupported model: " + String(model || ""));
 }
 
 function integerField(value, name, minimum, maximum) {
@@ -34,9 +56,14 @@ function integerField(value, name, minimum, maximum) {
   return number;
 }
 
-function durationField(request) {
-  if (request.duration === undefined && request.seconds === undefined) return DEFAULT_DURATION;
-  return integerField(request.duration === undefined ? request.seconds : request.duration, "duration", MIN_DURATION, MAX_DURATION);
+function durationField(request, profile) {
+  if (request.duration === undefined && request.seconds === undefined) return profile.defaultDuration;
+  return integerField(
+    request.duration === undefined ? request.seconds : request.duration,
+    "duration",
+    profile.minDuration,
+    profile.maxDuration
+  );
 }
 
 function mediaItems(value, name) {
@@ -54,8 +81,7 @@ function mediaItems(value, name) {
     if (!object) throw new Error(name + "[" + index + "] must be an object or URL string");
     const url = trimmed(object.url);
     if (!url || !/^https?:\/\//i.test(url)) throw new Error(name + "[" + index + "].url must be an http(s) URL");
-    const entry = Object.assign({}, object, { url: url });
-    items.push(entry);
+    items.push(Object.assign({}, object, { url: url }));
   }
   return items;
 }
@@ -66,11 +92,17 @@ function normalizeRequest(request, model, upstreamModel) {
   const prompt = trimmed(source.prompt);
   if (!prompt) throw new Error("field prompt is required");
 
+  const profile = profileFor(model);
   const body = {
     model: trimmed(upstreamModel) || trimmed(model) || MODELS[0],
     prompt: prompt,
-    duration: durationField(source),
+    duration: durationField(source, profile),
   };
+
+  const requestedResolution = trimmed(source.resolution).toLowerCase();
+  if (requestedResolution && !profile.resolutions.includes(requestedResolution))
+    throw new Error("resolution must be one of " + profile.resolutions.join(", "));
+  body.resolution = requestedResolution || profile.defaultResolution;
 
   const ratio = trimmed(source.ratio || source.aspect_ratio);
   if (ratio) {
@@ -78,16 +110,17 @@ function normalizeRequest(request, model, upstreamModel) {
     body.ratio = ratio;
   }
 
-  const resolution = trimmed(source.resolution);
-  if (resolution) {
-    if (!RESOLUTIONS.includes(resolution.toLowerCase())) throw new Error("resolution must be " + RESOLUTIONS.join(", "));
-    body.resolution = resolution.toLowerCase();
-  }
-
   for (const key of ["images", "videos", "audios"]) {
     const items = mediaItems(source[key], key);
     if (items !== undefined) body[key] = items;
   }
+  if (body.images && body.images.length > profile.maxImages)
+    throw new Error("images accepts at most " + profile.maxImages + " items");
+  if (profile.maxVideos > 0 && body.videos && body.videos.length > profile.maxVideos)
+    throw new Error("videos accepts at most " + profile.maxVideos + " items");
+  if (body.audios && body.audios.length > profile.maxAudios)
+    throw new Error("audios accepts at most " + profile.maxAudios + " items");
+
   if (source.materials !== undefined) {
     if (!Array.isArray(source.materials)) throw new Error("materials must be an array");
     body.materials = source.materials;
@@ -104,7 +137,7 @@ function normalizeRequest(request, model, upstreamModel) {
   })
     ? "image_to_video"
     : "text_to_video";
-  return { body, action };
+  return { body, action, profile };
 }
 
 export const meta = {
@@ -113,10 +146,10 @@ export const meta = {
   name: "Gway Video",
   icon: "text:GW",
   description: {
-    en: "Gway OpenAI-compatible video generation (MiniMax H3)",
-    zh: "Gway 视频生成（MiniMax H3，OpenAI 兼容协议）",
+    en: "Gway OpenAI-compatible video generation (MiniMax H3 / Wan 3.0)",
+    zh: "Gway 视频生成（MiniMax H3 / Wan 3.0，OpenAI 兼容协议）",
   },
-  version: "1.0.0",
+  version: "1.1.0",
   author: { name: "XingChai" },
   website: "https://gway.dev",
   baseUrl: "https://api.gway.dev",
@@ -130,10 +163,45 @@ export const meta = {
       description: { en: "Requested video duration in seconds", zh: "请求的视频时长（秒）" },
     },
   },
-  usageExamples: [
-    { label: "4s", facts: { seconds: 4 } },
-    { label: "8s", facts: { seconds: 8 } },
-    { label: "15s", facts: { seconds: 15 } },
+  usageProfiles: [
+    {
+      models: ["MiniMax H3"],
+      schema: {
+        seconds: {
+          type: "number",
+          unit: "second",
+          description: { en: "Requested video duration in seconds", zh: "请求的视频时长（秒）" },
+        },
+      },
+      examples: [
+        { label: "4s", facts: { seconds: 4 } },
+        { label: "15s", facts: { seconds: 15 } },
+      ],
+    },
+    {
+      models: ["Wan 3.0"],
+      schema: {
+        seconds: {
+          type: "number",
+          unit: "second",
+          description: { en: "Requested video duration in seconds", zh: "请求的视频时长（秒）" },
+        },
+        resolution: {
+          enum: ["480p", "720p", "1080p"],
+          enumLabels: {
+            "480p": { en: "480p", zh: "480p" },
+            "720p": { en: "720p", zh: "720p" },
+            "1080p": { en: "1080p", zh: "1080p" },
+          },
+          description: { en: "Output resolution", zh: "输出分辨率" },
+        },
+      },
+      examples: [
+        { label: "480p · 5s", facts: { seconds: 5, resolution: "480p" } },
+        { label: "720p · 5s", facts: { seconds: 5, resolution: "720p" } },
+        { label: "1080p · 5s", facts: { seconds: 5, resolution: "1080p" } },
+      ],
+    },
   ],
   protocols: [{ name: "openai_video", models: MODELS }],
 };
@@ -170,7 +238,7 @@ export function buildQueryRequest(ctx) {
 
 export function extractUsage(ctx) {
   const request = normalizeRequest(ctx.requestBody || {}, ctx.model, ctx.upstreamModel);
-  return { seconds: request.body.duration };
+  return { seconds: request.body.duration, resolution: request.body.resolution };
 }
 
 export function extractUsageOnComplete() {
