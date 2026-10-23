@@ -146,6 +146,11 @@ export function Docs() {
               <code className='bg-muted/60 rounded px-1.5 py-0.5 text-[12.5px]'>GET /v1/models</code>
               获取账号实际可用的模型列表。
             </p>
+            <p>
+              分组说明：<code>MiniMax H3</code> 属于 <code>Codex</code> 分组，
+              <code>Wan 3.0</code> 属于 <code>Wan</code> 分组。创建 API Key 时请在「令牌」页面选择对应分组，
+              否则该令牌无法调用对应模型。
+            </p>
           </Section>
 
           <Section id='auth' title='身份验证'>
